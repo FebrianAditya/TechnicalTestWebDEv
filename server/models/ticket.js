@@ -33,7 +33,7 @@ module.exports = (sequelize, DataTypes) => {
       }
     },
     date: {
-      type: DataTypes.DATE,
+      type: DataTypes.STRING,
       validate: {
         notEmpty: {
           args: true,

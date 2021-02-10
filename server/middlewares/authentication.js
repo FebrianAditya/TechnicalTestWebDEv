@@ -1,7 +1,7 @@
 const { Admin, SuperAdmin } = require("../models")
 const { verifyToken } = require("../helpers/generateAdnVerifyToken")
 
-function authenticationAdmin(req, res, next) {
+function authentication(req, res, next) {
     let access_token = req.headers.access_token
 
     try {
@@ -12,18 +12,32 @@ function authenticationAdmin(req, res, next) {
         }else {
             let email = decoded.email
             let id = decoded.id
+            req.dataUser = decoded
             
-            Admin.findOne({
+            const getAdmin = Admin.findOne({
                 where: {
                     email,
                     id
                 }
             })
+
+            const getSuperAdmin = SuperAdmin.findOne({
+                where: {
+                    email,
+                    id
+                }
+            })
+
+            Promise.all([getAdmin, getSuperAdmin])
                 .then(data => {
-                    next()
+                    if(data[0] || data[1]) {
+                        next()
+                    }else {
+                        res.status(500).json({ error: "eror dulu yaa"})
+                    }
                 })
                 .catch(err => {
-                    res.status(401).json({message: "You must have account"})
+                    res.status(500).json(err)
                 })
         }
     }
@@ -32,38 +46,4 @@ function authenticationAdmin(req, res, next) {
     }
 }
 
-function authenticationSuperAdmin(req, res) {
-    let access_token = req.headers.access_token
-
-    try {
-        let decoded = verifyToken(access_token)
-
-        if(!decoded) {
-            res.status(401).json({message: "You must have account"})
-        }else {
-            let email = decoded.email
-            let id = decoded.id
-
-            SuperAdmin.findOne({
-                where: {
-                    email,
-                    id
-                }
-            })
-                .then(data => {
-                    next()
-                })
-                .catch(err => {
-                    res.status(401).json({message: "You must have account"})
-                })
-        }
-    }
-    catch(err) {
-        res.status(500).json(err)
-    }
-}
-
-module.exports = {
-    authenticationAdmin,
-    authenticationSuperAdmin
-}
+module.exports = authentication

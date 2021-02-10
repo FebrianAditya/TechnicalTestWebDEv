@@ -17,6 +17,7 @@ module.exports = (sequelize, DataTypes) => {
 
     static associate(models) {
       // define association here
+      Admin.hasOne(models.Overview)
     }
   };
   Admin.init({
@@ -30,15 +31,7 @@ module.exports = (sequelize, DataTypes) => {
       }
     },
     lastName: DataTypes.STRING,
-    role: {
-      type: DataTypes.STRING,
-      validate: {
-        notEmpty: {
-          args: true,
-          msg: "Pease input role is admin"
-        }
-      }
-    },
+    displayPicture: DataTypes.STRING,
     email: {
       type: DataTypes.STRING,
       validate: {

@@ -38,13 +38,12 @@ class SuperAdminController {
                 if(data) {
                     let passwordInDataBase = data.password
                     if(bcrypt.compareSync(password, passwordInDataBase)) {
-                        let access_token = generateToken({ name: data.fullName(), email: data.email, id: data.id })
+                        let access_token = generateToken({ name: data.fullName(), email: data.email, id: data.id, role: data.role })
                         res.status(200).json({ access_token: access_token })
                     }else {
                         res.status(400).json({ message: "Password/Email Invalid" })
                     }
                 }else {
-                    console.log("---");
                     res.status(400).json({ message: "Password/Email and Role Invalid" })
                 }
             })
